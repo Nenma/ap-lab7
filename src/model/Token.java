@@ -8,7 +8,7 @@ import exceptions.IllegalTokenValueException;
  */
 public class Token {
 
-    public static final int NUMBER_LIMIT = 50; // This is the 'm' in the problem
+    public static final int NUMBER_LIMIT = 99; // This is the 'm' in the problem
     private int value;
 
     public Token() {

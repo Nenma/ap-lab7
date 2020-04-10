@@ -1,8 +1,18 @@
 package model;
 
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import sample.Controller;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static sample.Controller.NUMBER_OF_TOKENS;
 
 /**
  * Class simulating the playing board of the Game, containing a list
@@ -11,7 +21,7 @@ import java.util.Random;
 public class Board {
 
     private List<Token> tokens;
-    private boolean available = true;
+    private String whoseTurn;
 
     public Board() {
         tokens = new ArrayList<>();
@@ -25,41 +35,57 @@ public class Board {
         tokens.add(token);
     }
 
-    public synchronized Token selectRandomToken() {
-        while (!available) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                System.err.println("Thread interrupted: " + e);
-            }
+    /**
+     * Current player thread will only extract a token from the board when it's
+     * their turn
+     * @param opponent current thread opponent's name
+     */
+    public synchronized Token extractToken(String opponent) {
+        String player = Thread.currentThread().getName();
+        if (whoseTurn == null) {
+            whoseTurn = player;
+            return null;
         }
-
-        Random rand = new Random();
-        Token token = tokens.get(rand.nextInt(tokens.size()));
-        System.out.println(Thread.currentThread().getName() + " randomly selected token " + token);
-
-        available = false;
-        notifyAll();
-
-        return token;
-    }
-
-    public synchronized void extractToken(Token token) {
-        while (available) {
+        if (player.equals(whoseTurn)) {
+            Token token = playerAction(player, opponent);
+            notifyAll();
+            return token;
+        } else {
             try {
                 wait();
             } catch (InterruptedException e)  {
                 Thread.currentThread().interrupt();
                 System.err.println("Thread interrupted: " + e);
             }
+            return null;
         }
+    }
 
+    /**
+     * Randomly extracts one Token from the Board and updates the application
+     * GridPane using the runLater method
+     * @param player current thread player's name
+     * @param opponent current thread opponent's name
+     * @return a random Token from the Board
+     */
+    private Token playerAction(String player, String opponent) {
+        Random rand = new Random();
+        Token token = tokens.get(rand.nextInt(tokens.size()));
         tokens.remove(token);
-        System.out.println(Thread.currentThread().getName() + " extracted token " + token);
-
-        available = true;
-        notifyAll();
+        for (int i = 0; i < NUMBER_OF_TOKENS; ++i) {
+            if (Controller.tokens.get(i).getText().equals(String.valueOf(token.getValue()))) {
+                final int index = i;
+                Platform.runLater(() -> {
+                    if (whoseTurn.equals("Alex")) {
+                        Controller.tokens.get(index).setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+                    } else {
+                        Controller.tokens.get(index).setBackground(new Background(new BackgroundFill(Color.LIGHTPINK, CornerRadii.EMPTY, Insets.EMPTY)));
+                    }
+                });
+            }
+        }
+        whoseTurn = opponent;
+        return token;
     }
 
     public List<Token> getTokens() {

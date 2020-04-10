@@ -1,0 +1,20 @@
+.root {
+    -fx-background-color: bisque;
+}
+
+.button {
+    -fx-font-size: 20;
+    -fx-border-color: black;
+}
+
+.label {
+    -fx-font-size: 30;
+}
+
+#textPlayer1 {
+    -fx-background-color: lightblue;
+}
+
+#textPlayer2 {
+    -fx-background-color: lightpink;
+}
