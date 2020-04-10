@@ -1,13 +1,24 @@
 # ap-lab7
 
 ## Overview
-At the moment, the app contains:
-- A basic JavaFX structure for future tasks
-- The classes *Token*, *Board*, *Player* and *Game* with their respective specifications:
-  - The *Player* class implements Runnable and overrides the *run* method to extract a random token from the board
-  - The *Board* class contains 2 synchronized methods: one for selecting a random token from the board and one for extracting it
-  - The *Main* class generates random tokens for a Game instance and runs a separate thread for each player
-- An *IllegalTokenValueException* exception class for when a negative value is asigned to a token
+The app contains:
+- An application UI that only showcases a game between 2 RandomPlayers, but without any game logic implemented.
+- The players take each take their turns correctly, in succession, but the token sets they randomly compose are not evaluated in any way.
+- A daemon thread keeps track of the time from the start of the application correctly.
+
+## Bonus
+The tasks are:
+- Consider the situation when other types of positional games should be allowed. *Game* should be an abstract class. Implement also the clique game.
+**OR**
+- Create a simple graphical user interface for the game, using JavaFX.
+
+## Optional
+The tasks are:
+- Make sure that players wait their turns, using a *wait-notify* approach.
+- Implement a *timekeeper* thread that runs concurrently with the player threads, as a *daemon*. This thread will display the running time of the game and it will stop the game if it exceeds a certain time limit. Try it using larger values for *n*.
+- Consider the situation when each player might have a different strategy for extracting a number: automated (random or **smart**) or manual.
+*Player* should be an abstract class having as subclasses: *RandomPlayer*, *SmartPlayer*, *ManualPlayer*.
+A "smart" player should try to extend its largest arithmetic progression, while not allowing others to extend theirs. A manual player will use the keyboard. Implement all three strategies.
 
 ## Compulsory
 The tasks are:
